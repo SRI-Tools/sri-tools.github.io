@@ -1,0 +1,7 @@
+qrcode-generator 1.4.4 — Copyright (c) 2009 Kazuhiko Arase. MIT License.
+https://github.com/kazuhikoarase/qrcode-generator
+
+zxing-wasm 3.1.4 — Copyright (c) Ze-Zheng Wu. MIT License.
+https://github.com/Sec-ant/zxing-wasm
+Built from zxing-cpp — Copyright (c) zxing-cpp authors. Apache License 2.0.
+https://github.com/zxing-cpp/zxing-cpp

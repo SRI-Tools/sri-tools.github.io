@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Inventory</title>
+  <meta name="theme-color" content="#1f2933">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="inventory.css">
+  <link rel="stylesheet" href="clients.css">
+  <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="app-title"></h1>
+    <div class="user" id="user" hidden>
+      <span id="user-name"></span>
+      <button type="button" class="link" id="sign-out">Аккаунт</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" hidden>
+    <a href="#/bookings" data-tab="bookings">Брони</a>
+    <a href="#/free" data-tab="free">Свободно</a>
+    <a href="#/catalog" data-tab="catalog">Инвентарь</a>
+    <a href="#/clients" data-tab="clients">Клиенты</a>
+    <a href="#/labels" data-tab="labels">Этикетки</a>
+    <a href="#/users" data-tab="users" hidden>Сотрудники</a>
+    <div class="head-actions" id="booking-actions" hidden>
+      <button type="button" class="button danger" id="cancel-booking" title="Отменить бронь" hidden>Отменить</button>
+      <button type="button" class="button" id="save-draft" title="Сохранить как черновик">В черновик</button>
+      <button type="button" class="button primary" id="save-confirm">Подтвердить</button>
+      <button type="button" class="button primary" id="issue-booking" title="Выдача по скану" hidden>Выдача</button>
+      <button type="button" class="button primary" id="return-booking" title="Возврат по скану" hidden>Возврат</button>
+    </div>
+  </nav>
+  <div class="offline-bar" id="offline-bar" role="status" hidden></div>
+
+  <main>
+    <section id="signin" class="panel center" hidden>
+      <p>Войдите аккаунтом Google, добавленным в список сотрудников.</p>
+      <div id="gsi-button"></div>
+    </section>
+
+    <section id="view-bookings" class="view" hidden>
+      <div class="toolbar row-between">
+        <h2 class="view-title">Брони</h2>
+        <a class="button primary" href="#/booking/new">+ Новая бронь</a>
+      </div>
+      <div id="bookings-list"></div>
+    </section>
+
+    <section id="view-booking" class="view" hidden>
+      <div class="toolbar booking-head">
+        <div class="booking-head-title">
+          <h2 class="view-title" id="booking-title">Новая бронь</h2>
+          <span id="booking-status"></span>
+        </div>
+      </div>
+      <div class="booking-layout" id="booking-layout">
+      <div class="booking-main">
+      <form id="booking-form" class="panel form" autocomplete="off">
+        <div class="ac">
+          <label>Клиент
+            <input name="client_name" required placeholder="Имя или название" autocomplete="off"
+              role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="client-options">
+          </label>
+          <ul id="client-options" class="ac-list" role="listbox" aria-label="Клиенты из базы" hidden></ul>
+        </div>
+        <label>Телефон
+          <input name="client_phone" type="tel" placeholder="+7 …">
+        </label>
+        <div class="dates">
+          <fieldset>
+            <legend>Выдача</legend>
+            <input name="start" type="date" required>
+            <select name="start_half"><option value="am">утро</option><option value="pm">вечер</option></select>
+          </fieldset>
+          <fieldset>
+            <legend>Возврат</legend>
+            <input name="end" type="date" required>
+            <select name="end_half"><option value="pm">вечер</option><option value="am">утро</option></select>
+          </fieldset>
+        </div>
+        <div class="booking-terms">
+          <label>Смен
+            <input name="shifts" type="number" min="1" max="999" step="1" inputmode="numeric" placeholder="по датам">
+          </label>
+          <label class="check-row booking-contract">
+            <input name="contract" type="checkbox"> С договором
+          </label>
+        </div>
+        <label>Примечание
+          <textarea name="notes" rows="2"></textarea>
+        </label>
+      </form>
+
+      <div class="section-head">
+        <h3>Состав <span class="count" id="lines-count"></span></h3>
+        <button type="button" class="button" id="add-gear">+ Добавить</button>
+      </div>
+      <ul class="list" id="booking-lines"></ul>
+      <p class="muted" id="lines-empty">Оборудование не выбрано.</p>
+      <div id="kit-notes"></div>
+      <div id="price-summary"></div>
+
+      <div id="booking-messages"></div>
+
+      </div>
+      <aside id="picker-wrap" class="picker-wrap" hidden>
+        <div class="section-head">
+          <h3>Выбор оборудования</h3>
+          <button type="button" class="button" id="picker-done">Готово</button>
+        </div>
+        <div id="picker"></div>
+      </aside>
+
+      </div>
+    </section>
+
+    <section id="view-free" class="view" hidden>
+      <div class="toolbar"><h2 class="view-title">Что свободно</h2></div>
+      <form id="free-form" class="panel form dates">
+        <fieldset>
+          <legend>С</legend>
+          <input name="start" type="date" required>
+          <select name="start_half"><option value="am">утро</option><option value="pm">вечер</option></select>
+        </fieldset>
+        <fieldset>
+          <legend>По</legend>
+          <input name="end" type="date" required>
+          <select name="end_half"><option value="pm">вечер</option><option value="am">утро</option></select>
+        </fieldset>
+      </form>
+      <div id="free-picker"></div>
+      <div class="sticky-bar" id="free-bar" hidden>
+        <span id="free-selected"></span>
+        <button type="button" class="button primary" id="free-create">Создать бронь</button>
+      </div>
+    </section>
+
+    <section id="view-catalog" class="view" hidden>
+      <div id="inventory"></div>
+    </section>
+
+    <section id="view-clients" class="view" hidden>
+      <div id="clients"></div>
+    </section>
+
+    <section id="view-users" class="view" hidden>
+      <div class="toolbar"><h2 class="view-title">Сотрудники и права</h2></div>
+      <div id="users"></div>
+    </section>
+
+    <section id="view-labels" class="view" hidden>
+      <div class="toolbar"><h2 class="view-title">Этикетки</h2></div>
+      <div id="labels"></div>
+    </section>
+
+    <p id="message" class="message" role="status" hidden></p>
+  </main>
+
+  <dialog id="item-dialog">
+    <form method="dialog">
+      <h2 id="item-title"></h2>
+      <dl id="item-fields"></dl>
+      <button type="submit" class="button primary wide">Закрыть</button>
+    </form>
+  </dialog>
+
+  <dialog id="account-dialog">
+    <h2>Аккаунт</h2>
+    <p class="muted">Вход сохраняется на этом устройстве на полгода и продлевается при каждом открытии.</p>
+    <div id="ics-box" class="ics-box"></div>
+    <div class="actions">
+      <button type="button" class="button" id="sign-out-here">Выйти на этом устройстве</button>
+      <button type="button" class="button danger" id="sign-out-all">Выйти на всех устройствах</button>
+      <button type="button" class="button" id="account-close">Закрыть</button>
+    </div>
+  </dialog>
+
+  <dialog id="scan-dialog" class="scan-dialog">
+    <div class="row-between">
+      <h2 id="scan-title">Сканирование</h2>
+      <button type="button" class="button small" id="scan-close" aria-label="Закрыть">×</button>
+    </div>
+    <div class="scan-video-box">
+      <video id="scan-video" muted playsinline></video>
+      <p class="muted" id="scan-hint">Наведите камеру на штрихкод</p>
+    </div>
+    <form id="scan-manual" class="search-row">
+      <input name="code" placeholder="Код вручную или Bluetooth-сканером" autocomplete="off" autocapitalize="characters">
+      <button type="submit" class="button">OK</button>
+    </form>
+    <div id="scan-last"></div>
+    <div id="scan-extra"></div>
+    <div class="actions" id="scan-actions"></div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

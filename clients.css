@@ -1,0 +1,74 @@
+/* ---------- клиенты ---------- */
+
+.cl-list, .cl-history { margin-top: 4px; }
+.cl-empty { margin-top: 12px; }
+.cl-empty p { margin: 0 0 8px; }
+
+.cl-row { align-items: center; }
+.cl-row-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.cl-name { font-weight: 600; overflow-wrap: anywhere; }
+.cl-type { color: var(--accent); background: var(--code-bg); }
+.cl-chevron { flex: none; font-size: 20px; line-height: 1; color: var(--muted); }
+
+.cl-back {
+  display: inline-block;
+  margin: 4px 0 12px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.cl-back:hover { text-decoration: underline; }
+
+.cl-title { margin-bottom: 12px; }
+
+.cl-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cl-head-title { min-width: 0; flex: 1 1 220px; }
+.cl-head-title .view-title { overflow-wrap: anywhere; }
+.cl-head-type { display: block; margin: 2px 0 0; }
+.cl-head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.cl-block { margin-bottom: 16px; padding: 16px; }
+.cl-block-title { margin: 0 0 10px; font-size: 16px; }
+.cl-none { margin: 0; }
+
+.cl-dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; margin: 0; }
+.cl-dl dt { color: var(--muted); font-size: 14px; }
+.cl-dl dd { margin: 0; overflow-wrap: anywhere; }
+.cl-dl a { color: var(--accent); }
+.cl-pre { white-space: pre-line; }
+
+.cl-booking .dates-cell { min-width: 84px; }
+.cl-booking-id { font: 600 14px/1.4 ui-monospace, Consolas, monospace; }
+
+.cl-form { padding: 16px; }
+.cl-form-section { margin: 8px 0 0; font-size: 16px; }
+.cl-form input[aria-invalid="true"],
+.cl-form textarea[aria-invalid="true"] { border-color: var(--bad); }
+.cl-form .note.bad { margin-top: 0; }
+.cl-passport { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
+.cl-actions { margin: 4px 0 0; }
+
+@media (min-width: 640px) {
+  .cl-form { grid-template-columns: 1fr 1fr; }
+  .cl-form > label.cl-wide,
+  .cl-form > .cl-form-section,
+  .cl-form > .cl-passport,
+  .cl-form > .cl-actions,
+  .cl-form > div:not([class]) { grid-column: 1 / -1; }
+}
+
+/* На узком экране подписи над значениями. */
+@media (max-width: 420px) {
+  .cl-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .cl-dl dd + dt { margin-top: 8px; }
+  .cl-head-actions { width: 100%; }
+  .cl-head-actions .button { flex: 1; }
+}
+
+.cl-delete { margin: 8px 0 32px; }
